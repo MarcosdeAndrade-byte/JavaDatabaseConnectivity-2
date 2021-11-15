@@ -30,7 +30,19 @@ private static Connection conn = null;
 		}
 		return conn;
 	}
-
+	
+	//Método para fechar conexão
+	public static void closeConnection() {
+		//Se conn for diferente de null utilizamos o método close para fexhar a conexão com o banco de dados
+		if(conn != null) {
+			try{
+				conn.close();
+			}
+			catch(SQLException e){
+				throw new DbException(e.getMessage());
+			}
+		}
+	}
 	
 	//Método para guardar propriedades(Informações do banco de dados que estão na pasta db.properties)
 	private static Properties loadProperties() {
