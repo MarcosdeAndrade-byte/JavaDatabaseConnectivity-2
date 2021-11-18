@@ -2,7 +2,9 @@ package application;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -33,8 +35,8 @@ public class Program {
 				   //Comando SQL
 				   + "VALUES"
 				   //Comando SQL(Cada interrogação deve coresponder aos campos que queremos preencher)
-				   + "(?,?,?,?,?)"
-				   );
+				   + "(?,?,?,?,?)",
+				   Statement.RETURN_GENERATED_KEYS);
 			
 			//Utilizamos a função set correspondente com o tipo de dado com o capo(Campo,NovoDado)
 			st.setString(1,"Irineu");
@@ -46,7 +48,18 @@ public class Program {
 
 			//Linhas que forma modificadas 
 			int rowsAffected = st.executeUpdate();
-			System.out.println(st.executeUpdate());
+			
+			if(rowsAffected > 0) {
+				 ResultSet rs =  st.getGeneratedKeys();
+				 
+				 while(rs.next()) {
+					 int id = rs.getInt(1);
+					 System.out.println("Feito! Id =" + id);
+				 }
+			}
+			else {
+				System.out.println("No rown affected!");
+			}
 		
 		}catch(SQLException e ) {
 			e.printStackTrace();
