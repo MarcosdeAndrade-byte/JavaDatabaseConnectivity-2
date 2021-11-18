@@ -1,47 +1,62 @@
 package application;
 
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import db.DB;
 
 public class Program {
 
 	public static void main(String[] args) {
+	
+		//Formato da data
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
 		
+		//Instânciamos Connection e PreparedStatement para utilização no sistema
 		Connection conn = null;
-		//O Statement serve para executarmos um comando sql que vai recuperar as informações no banco de dados
-		Statement st = null;
-		//Já o ResultSet serve para armazenar os dados(Em forma de tabela)
-		ResultSet rs = null;
+		//Objeto utilizado para fazer uma inserção no banco de dados
+		PreparedStatement st = null;
 		
 		try {
-			//conn recebe uma conexão com o banco de dados(Nos conectamos com o banco)
+			//Nos conectamos ao banco de dados
 			conn = DB.getConnection();
 			
-			//A variável ST do tipo Statement recebe  conn.createStatement()
-			st = conn.createStatement();
+			//Objeto utilizado para fazer inserção no banco de dados(Script SQL como argumento)
+			st = conn.prepareStatement(
+					//Comando SQL
+					"INSERT INTO seller"
+					//Campos que queremos preencher 
+				   +"(Name,Email,BirthDate,BaseSalary,DepartmentId)"
+				   //Comando SQL
+				   + "VALUES"
+				   //Comando SQL(Cada interrogação deve coresponder aos campos que queremos preencher)
+				   + "(?,?,?,?,?)"
+				   );
 			
-			//através do método executeQuery podemos passar um Script SQL
-			rs = st.executeQuery("select * from department");
-			
-			//Enquanto houver linha será mostrado os dados na tela
-			while(rs.next()) {
-				System.out.println(rs.getInt("Id") + ", " + rs.getString("Name"));
-			}
+			//Utilizamos a função set correspondente com o tipo de dado com o capo(Campo,NovoDado)
+			st.setString(1,"Irineu");
+			st.setString(2, "teste1@gmail.com");
+			//Podemos inserir datas apenas do tipo SQL
+			st.setDate(3, new java.sql.Date(sdf.parse("22/04/1985").getTime()));
+			st.setDouble(4, 1000.1);
+			st.setInt(5, 2);
+
+			//Linhas que forma modificadas 
+			int rowsAffected = st.executeUpdate();
+			System.out.println(st.executeUpdate());
+		
+		}catch(SQLException e ) {
+			e.printStackTrace();
 		}
-		catch(SQLException e){
+		catch(ParseException e) {
 			e.printStackTrace();
 		}
 		finally {
-			//Utilizamos os métodos da classe DB para fechar as instâncias feitas(Um método diferente para cada uma)
-			DB.closseResultSet(rs);
-			DB.closseStatement(st);
+		    DB.closseStatement(st);
 			DB.closeConnection();
 		}
-	}
-
+ }
 }

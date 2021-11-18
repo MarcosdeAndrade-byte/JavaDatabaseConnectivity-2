@@ -20,8 +20,7 @@ public class DB {
 			try {
 				// Carregamos as conexões para variável props
 				Properties props = loadProperties();
-				// A variável URL do tipo String recebe a propriedade dburl que está no arquivo
-				// db.properties
+				// A variável URL do tipo String recebe a propriedade dburl que está no arquivo db.properties
 				String url = props.getProperty("dburl");
 				// conn recebe um método que faz a leitura das propriedades URL e props
 				conn = DriverManager.getConnection(url, props);
