@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import db.DB;
+import db.dbIntegrityException;
 
 public class Program {
 
@@ -30,7 +31,8 @@ public class Program {
 			System.out.println("Done! Rows affected: " + rowsAffected);
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			//Podemos capturar uma exceção personalizada
+			throw new dbIntegrityException(e.getMessage());
 
 		} finally {
 			DB.closseStatement(st);
