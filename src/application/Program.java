@@ -2,74 +2,44 @@ package application;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 import db.DB;
 
 public class Program {
 
 	public static void main(String[] args) {
-	
-		//Formato da data
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
-		
-		//Instânciamos Connection e PreparedStatement para utilização no sistema
-		Connection conn = null;
-		//Objeto utilizado para fazer uma inserção no banco de dados
-		PreparedStatement st = null;
-		
-		try {
-			//Nos conectamos ao banco de dados
-			conn = DB.getConnection();
-			
-			//Objeto utilizado para fazer inserção no banco de dados(Script SQL como argumento)
-			st = conn.prepareStatement(
-					//Comando SQL
-					"INSERT INTO seller"
-					//Campos que queremos preencher 
-				   +"(Name,Email,BirthDate,BaseSalary,DepartmentId)"
-				   //Comando SQL
-				   + "VALUES"
-				   //Comando SQL(Cada interrogação deve coresponder aos campos que queremos preencher)
-				   + "(?,?,?,?,?)",
-				   Statement.RETURN_GENERATED_KEYS);
-			
-			//Utilizamos a função set correspondente com o tipo de dado com o capo(Campo,NovoDado)
-			st.setString(1,"Irineu");
-			st.setString(2, "teste1@gmail.com");
-			//Podemos inserir datas apenas do tipo SQL
-			st.setDate(3, new java.sql.Date(sdf.parse("22/04/1985").getTime()));
-			st.setDouble(4, 1000.1);
-			st.setInt(5, 2);
 
-			//Linhas que forma modificadas 
+		// Representa uma conexão ao banco de dados
+		Connection conn = null;
+		// É usado para criar um objeto que representa a instrução SQL que será executada
+		PreparedStatement st = null;
+
+		try {
+			// Conexão com o banco de dados
+			conn = DB.getConnection();
+
+			st = conn.prepareStatement("UPDATE seller "
+					+ "SET BaseSalary = BaseSalary + ? "
+					+ "WHERE "
+					+ "(DepartmentId = ?)");
+
+			//Atualizamos os salários dos funcionários em 200 reais
+			st.setDouble(1, 200.0);
+			//Selecionamos apenas os funcionários do departamento 2
+			st.setInt(2, 2);
+
+			//Número de linhas que foram alteradas 
 			int rowsAffected = st.executeUpdate();
+			System.out.println("Feito! " + rowsAffected);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
 			
-			if(rowsAffected > 0) {
-				 ResultSet rs =  st.getGeneratedKeys();
-				 
-				 while(rs.next()) {
-					 int id = rs.getInt(1);
-					 System.out.println("Feito! Id =" + id);
-				 }
-			}
-			else {
-				System.out.println("No rown affected!");
-			}
-		
-		}catch(SQLException e ) {
-			e.printStackTrace();
+		} finally {
+			DB.closseStatement(st);
+            DB.closeConnection();
 		}
-		catch(ParseException e) {
-			e.printStackTrace();
-		}
-		finally {
-		    DB.closseStatement(st);
-			DB.closeConnection();
-		}
- }
+
+	}
 }
