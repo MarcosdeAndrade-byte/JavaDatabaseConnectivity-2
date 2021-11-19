@@ -12,33 +12,29 @@ public class Program {
 
 		// Representa uma conexão ao banco de dados
 		Connection conn = null;
-		// É usado para criar um objeto que representa a instrução SQL que será executada
+		// É usado para criar um objeto que representa a instrução SQL que será
+		// executada
 		PreparedStatement st = null;
 
 		try {
 			// Conexão com o banco de dados
 			conn = DB.getConnection();
 
-			st = conn.prepareStatement("UPDATE seller "
-					+ "SET BaseSalary = BaseSalary + ? "
-					+ "WHERE "
-					+ "(DepartmentId = ?)");
+			st = conn.prepareStatement("DELETE FROM department " + "WHERE " + "Id = ?");
 
-			//Atualizamos os salários dos funcionários em 200 reais
-			st.setDouble(1, 200.0);
-			//Selecionamos apenas os funcionários do departamento 2
-			st.setInt(2, 2);
+			st.setInt(1, 5);
 
-			//Número de linhas que foram alteradas 
+			// Número de linhas que foram alteradas
 			int rowsAffected = st.executeUpdate();
-			System.out.println("Feito! " + rowsAffected);
+
+			System.out.println("Done! Rows affected: " + rowsAffected);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-			
+
 		} finally {
 			DB.closseStatement(st);
-            DB.closeConnection();
+			DB.closeConnection();
 		}
 
 	}
